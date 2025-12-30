@@ -1,0 +1,24 @@
+---
+title: "Surviving Scale"
+author: "Lucent"
+lang: en-US
+toc: true
+documentclass: book
+classoption:
+  - twoside
+  - openany
+# Trade paperback trim size + margins + gutter
+geometry:
+  - paperwidth=6in
+  - paperheight=9in
+  - twoside
+  - inner=0.9in
+  - outer=0.65in
+  - top=0.8in
+  - bottom=0.9in
+  - bindingoffset=0.15in
+
+mainfont: "Spectral"
+fontsize: 12pt
+linestretch: 1.15
+---

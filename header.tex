@@ -1,0 +1,10 @@
+\newcommand{\chaptersubtitle}[1]{%
+  \vspace{-1.0em}% <-- space ABOVE subtitle (negative pulls it up closer)
+  {\footnotesize\itshape #1\par}% <-- subtitle style/size
+  \vspace{0.8em}% <-- space BELOW subtitle (before body text)
+}
+
+\usepackage{titlesec}
+
+% {left}{before}{after}
+\titlespacing*{\chapter}{0pt}{0pt}{1.0em}

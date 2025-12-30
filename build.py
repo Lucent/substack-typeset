@@ -2,8 +2,8 @@
 import csv, re, subprocess
 from pathlib import Path
 
-csv_path = Path("posts.csv")
-posts_dir = Path("posts")
+csv_path = Path("/mnt/c/Users/Lucent/Downloads/substack/posts.csv")
+posts_dir = Path("/mnt/c/Users/Lucent/Downloads/substack/posts")
 out_md = Path("combined.md")
 lua = Path("links-to-footnotes.lua")
 
@@ -58,12 +58,12 @@ for r in rows:
 	md = link_re.sub(repl, md)
 
 	# per-post: links -> footnotes; put them at end of this post
-#	md = subprocess.check_output(
-#		["pandoc", "-f", "markdown", "-t", "markdown+footnotes",
-#		 "--reference-location=document", "--lua-filter", str(lua), "--wrap=none"],
-#		input=md,
-#		text=True,
-#	)
+	md = subprocess.check_output(
+		["pandoc", "-f", "markdown", "-t", "markdown+footnotes",
+		 "--reference-location=document", "--lua-filter", str(lua), "--wrap=none"],
+		input=md,
+		text=True,
+	)
 
 	parts.append(
 		f"# {title}\n\n"
