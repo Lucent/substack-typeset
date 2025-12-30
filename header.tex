@@ -5,6 +5,8 @@
 }
 
 \usepackage{titlesec}
+\usepackage{etoolbox}
+\preto\chapter{\setcounter{footnote}{0}}
 
-% {left}{before}{after}
-\titlespacing*{\chapter}{0pt}{0pt}{1.0em}
+\titleformat{\chapter}[block]{\bfseries\Large}{}{0pt}{}
+\titlespacing*{\chapter}{0pt}{0pt}{0.5em}

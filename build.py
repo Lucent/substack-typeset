@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import csv, re, subprocess
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from pathlib import Path
 
-csv_path = Path("/mnt/c/Users/Lucent/Downloads/substack/posts.csv")
-posts_dir = Path("/mnt/c/Users/Lucent/Downloads/substack/posts")
+substack_dir = Path("/mnt/c/Users/Lucent/Downloads/substack")
 out_md = Path("combined.md")
+chapters_dir = Path("chapters")
 lua = Path("links-to-footnotes.lua")
+
+chapters_dir.mkdir(exist_ok=True)
 
 titles_file = Path("titles.tsv")
 titles = dict(line.rstrip("\n").split("\t", 1) for line in titles_file.read_text().splitlines()) if titles_file.exists() else {}
@@ -13,8 +17,9 @@ titles = dict(line.rstrip("\n").split("\t", 1) for line in titles_file.read_text
 link_re = re.compile(r"\[([^\]]+)\]\((https?://[^\s)]+)\)")
 
 parts = []
+chapter_files = []
 
-with open(csv_path, newline="", encoding="utf-8") as f:
+with open(substack_dir / "posts.csv", newline="", encoding="utf-8") as f:
 	rows = list(csv.DictReader(f))
 
 rows = [r for r in rows if r["is_published"].lower() == "true"]
@@ -25,7 +30,7 @@ for r in rows:
 	title = r["title"]
 	subtitle = r.get("subtitle", "")
 
-	html = (posts_dir / f"{post_id}.html").read_text(encoding="utf-8")
+	html = (substack_dir / "posts" / f"{post_id}.html").read_text(encoding="utf-8")
 
 	md = subprocess.check_output(
 		["pandoc", "-f", "html", "-t", "markdown", "--wrap=none"],
@@ -42,6 +47,9 @@ for r in rows:
 
 	def repl(m):
 		url = m.group(2)
+		# Skip title fetch for internal links (handled specially in Lua filter)
+		if "lucent.substack.com" in url:
+			return m.group(0)
 		if url in titles:
 			page_title = titles[url]
 		else:
@@ -57,21 +65,25 @@ for r in rows:
 
 	md = link_re.sub(repl, md)
 
-	# per-post: links -> footnotes; put them at end of this post
-	md = subprocess.check_output(
-		["pandoc", "-f", "markdown", "-t", "markdown+footnotes",
-		 "--reference-location=document", "--lua-filter", str(lua), "--wrap=none"],
-		input=md,
-		text=True,
-	)
-
-	parts.append(
+	content = (
 		f"# {title}\n\n"
 		+ (f"*{subtitle}*\n\n" if subtitle else "")
 		+ md.strip()
 		+ "\n\n"
 	)
+	parts.append(content)
+
+	# Write individual chapter file
+	# Convert to Pacific time before extracting date - posts were written before midnight PT
+	post_dt = datetime.strptime(r["post_date"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+	post_date = post_dt.astimezone(ZoneInfo("America/Los_Angeles")).strftime("%Y-%m-%d")
+	slug = re.sub(r'[^a-z0-9]+', '-', title.lower()).strip('-')
+	chapter_file = chapters_dir / f"{post_date}-{slug}.md"
+	chapter_file.write_text(content, encoding="utf-8")
+	chapter_files.append(str(chapter_file))
+	print(f"Wrote: {chapter_file}")
 
 out_md.write_text("".join(parts), encoding="utf-8")
-print(out_md)
+print(f"\nWrote {out_md} with {len(parts)} chapters")
+print(f"Wrote {len(chapter_files)} individual files to {chapters_dir}/")
 

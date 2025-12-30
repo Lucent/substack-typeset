@@ -3,6 +3,7 @@ title: "Surviving Scale"
 author: "Lucent"
 lang: en-US
 toc: true
+toc-depth: 0
 documentclass: book
 classoption:
   - twoside
