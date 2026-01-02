@@ -1,0 +1,38 @@
+---
+title: "Surviving Scale"
+subtitle: "Coherence Under Recomposition"
+author: "Lucent"
+date: "2025"
+# thanks: "With thanks to my readers"
+lang: en-US
+toc: true
+toc-title: "Sequence"
+toc-depth: 0
+documentclass: book
+classoption:
+  - twoside
+  - openany
+# Trade paperback trim size + margins + gutter
+geometry:
+  - paperwidth=6.25in
+  - paperheight=9.25in
+  - layoutwidth=6in
+  - layoutheight=9in
+  - layouthoffset=0.125in
+  - layoutvoffset=0.125in
+  - twoside
+  - inner=0.75in
+  - outer=0.5in
+  - top=0.625in
+  - bottom=0.75in
+  - bindingoffset=0.25in
+
+mainfont: "spectral-substack.ttf"
+mainfontoptions:
+  - Path=fonts/
+  - ItalicFont=spectral-substack-italic.ttf
+  - BoldFont=spectral-substack-bold.ttf
+#  - RawFeature={fallback=mainfallback}
+fontsize: 11pt
+linestretch: 1.15
+---

@@ -4,9 +4,74 @@
   \vspace{0.8em}% <-- space BELOW subtitle (before body text)
 }
 
+% Part description (appears on part page, not in TOC)
+\newcommand{\partdesc}[1]{%
+  \vspace{0.5em}%
+  {\itshape #1\par}%
+  \clearpage
+}
+
+% Smart quotes
+\usepackage[autostyle=true]{csquotes}
+
+% Tighter TOC spacing with dot leaders
+\usepackage[titles]{tocloft}
+\setlength{\cftbeforechapskip}{0.6em}
+\renewcommand{\cftchapdotsep}{\cftdotsep}
+\renewcommand{\cftchapfont}{\Large}
+\renewcommand{\cftchappagefont}{\Large}
+\renewcommand{\cftpartfont}{\LARGE\bfseries}
+\renewcommand{\cftpartpagefont}{\LARGE\bfseries}
+\setlength{\cftbeforepartskip}{1em}
+
 \usepackage{titlesec}
 \usepackage{etoolbox}
 \preto\chapter{\setcounter{footnote}{0}}
 
 \titleformat{\chapter}[block]{\bfseries\Large}{}{0pt}{}
 \titlespacing*{\chapter}{0pt}{0pt}{0.5em}
+
+\titleclass{\part}{straight}
+\titleformat{\part}[block]{\bfseries\LARGE}{}{0pt}{}
+\titlespacing*{\part}{0pt}{0pt}{0.5em}
+
+% Better typography (kerning, spacing, hyphenation)
+% microtype loaded by pandoc, just ensure it's active
+\microtypesetup{final}
+
+% Suppress section titles in running headers (keep default book style)
+\renewcommand{\sectionmark}[1]{}
+
+% Widow/orphan control - only prevent, don't stretch spacing
+\widowpenalty=5000
+\clubpenalty=5000
+\raggedbottom
+
+% Drop caps
+\usepackage{lettrine}
+
+% Ragged right footnotes
+\usepackage{ragged2e}
+\let\oldfootnote\footnote
+\renewcommand{\footnote}[1]{\oldfootnote{\RaggedRight #1}}
+
+% Fallback for blackletter W
+\usepackage{newunicodechar}
+\newfontfamily\mathfallback{Latin Modern Math}
+\newunicodechar{𝔚}{{\mathfallback 𝔚}}
+
+% Copyright page (appears on back of title page)
+\AtEndPreamble{
+\AtBeginDocument{
+\thispagestyle{empty}
+\null\vfill
+\begin{flushleft}
+\textit{Surviving Scale}\\[0.5em]
+Copyright © 2025 Lucent\\[0.5em]
+All rights reserved.\\[1em]
+No part of this book may be reproduced in any form without written permission from the author.\\[1em]
+First Edition\\[2em]
+\small Originally published on Substack at lucent.substack.com
+\end{flushleft}
+\clearpage
+}}
