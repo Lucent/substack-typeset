@@ -99,8 +99,8 @@ for chapter_num, r in enumerate(rows, 1):
 		part_title, part_desc = part_breaks[chapter_num]
 		part_header = f"\\part{{{part_title}}}\n"
 		if part_desc:
-			part_header += f"\\partdesc{{{part_desc}}}\n"
-		part_header += "\n"
+			part_header += f"\\epigraph{{{part_desc}}}{{}}\n"
+		part_header += "\\clearpage\n\n"
 
 	content = (
 		part_header

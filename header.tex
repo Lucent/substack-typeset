@@ -4,25 +4,19 @@
   \vspace{0.8em}% <-- space BELOW subtitle (before body text)
 }
 
-% Part description (appears on part page, not in TOC)
-\newcommand{\partdesc}[1]{%
-  \vspace{0.5em}%
-  {\itshape #1\par}%
-  \clearpage
-}
+% Epigraphs for part pages
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.8\textwidth}
 
 % Smart quotes
 \usepackage[autostyle=true]{csquotes}
 
-% Tighter TOC spacing with dot leaders
+% TOC: dot leaders, unbold chapters, tighter spacing
 \usepackage[titles]{tocloft}
-\setlength{\cftbeforechapskip}{0.6em}
 \renewcommand{\cftchapdotsep}{\cftdotsep}
-\renewcommand{\cftchapfont}{\Large}
-\renewcommand{\cftchappagefont}{\Large}
-\renewcommand{\cftpartfont}{\LARGE\bfseries}
-\renewcommand{\cftpartpagefont}{\LARGE\bfseries}
-\setlength{\cftbeforepartskip}{1em}
+\renewcommand{\cftchapfont}{\normalfont}
+\renewcommand{\cftchappagefont}{\normalfont}
+\setlength{\cftbeforechapskip}{0.3em}
 
 \usepackage{titlesec}
 \usepackage{etoolbox}
@@ -31,9 +25,10 @@
 \titleformat{\chapter}[block]{\bfseries\Large}{}{0pt}{}
 \titlespacing*{\chapter}{0pt}{0pt}{0.5em}
 
-\titleclass{\part}{straight}
-\titleformat{\part}[block]{\bfseries\LARGE}{}{0pt}{}
-\titlespacing*{\part}{0pt}{0pt}{0.5em}
+% Parts: start on new page, allow content after title
+\titleclass{\part}{top}
+\titleformat{\part}[block]{\bfseries\Huge\filcenter}{}{0pt}{}
+\titlespacing*{\part}{0pt}{3cm}{1cm}
 
 % Better typography (kerning, spacing, hyphenation)
 % microtype loaded by pandoc, just ensure it's active
