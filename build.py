@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from pathlib import Path
 
-substack_dir = Path("/mnt/c/Users/Lucent/Downloads/substack")
+substack_dir = Path("/mnt/c/Users/Lucent/OneDrive/Documents/Backup/Substack/substack")
 out_md = Path("output/combined.md")
 chapters_dir = Path("output/chapters")
 lua = Path("links-to-footnotes.lua")
@@ -14,17 +14,12 @@ chapters_dir.mkdir(parents=True, exist_ok=True)
 titles_file = Path("data/footnotes.tsv")
 titles = dict(line.rstrip("\n").split("\t", 1) for line in titles_file.read_text().splitlines()) if titles_file.exists() else {}
 
-# Parts: chapter_num -> (title, description) inserted before that chapter
-parts_file = Path("data/parts.tsv")
+# Part pages: parts/N.tex files inserted before chapter N
+parts_dir = Path("parts")
 part_breaks = {}
-if parts_file.exists():
-	for line in parts_file.read_text().splitlines():
-		if line.strip() and not line.startswith("#"):
-			cols = line.split("\t")
-			num = int(cols[0])
-			title = cols[1] if len(cols) > 1 else ""
-			desc = cols[2] if len(cols) > 2 else ""
-			part_breaks[num] = (title, desc)
+if parts_dir.exists():
+	for f in parts_dir.glob("*.tex"):
+		part_breaks[int(f.stem)] = f.read_text(encoding="utf-8")
 
 # Extract URLs for title fetching (not for replacement)
 url_re = re.compile(r"https?://[^\s\)\]\"'>]+")
@@ -85,27 +80,31 @@ for chapter_num, r in enumerate(rows, 1):
 			except:
 				pass
 
-	# Drop cap on first paragraph
-	def drop_cap(m):
-		first, rest = m.group(1), m.group(2)
-		return f"\\lettrine{{{first}}}{{}}{rest}"
-	md = re.sub(r"^([A-Z])(\w+)", drop_cap, md.strip(), count=1)
+	# Drop cap on first body paragraph (skips leading ## headers)
+	md = md.strip()
+	lines = md.split('\n')
+	for i, line in enumerate(lines):
+		if not line.strip() or line.startswith('#'):
+			continue
+		m = re.match(r'([""\'\u2018\u2019]?)([A-Z])(\w*)', line)
+		if m:
+			ante, first, rest = m.group(1), m.group(2), m.group(3)
+			if ante:
+				lines[i] = f"\\lettrine[ante={ante}]{{{first}}}{{}}{rest}" + line[m.end():]
+			else:
+				lines[i] = f"\\lettrine{{{first}}}{{}}{rest}" + line[m.end():]
+		break
+	md = '\n'.join(lines)
 
 	slug = r["post_id"].split(".", 1)[1]
 
-	# Insert part break before this chapter if specified
-	part_header = ""
-	if chapter_num in part_breaks:
-		part_title, part_desc = part_breaks[chapter_num]
-		part_header = f"\\part{{{part_title}}}\n"
-		if part_desc:
-			part_header += f"\\epigraph{{{part_desc}}}{{}}\n"
-		part_header += "\\clearpage\n\n"
+	# Insert part break before this chapter if one exists
+	part_header = part_breaks.get(chapter_num, "")
 
 	content = (
 		part_header
 		+ f"# {title}\n\n"
-		+ (f"*{subtitle}*\n\n" if subtitle else "")
+		+ (f"\\chapterprecishere{{{subtitle}}}\n\n" if subtitle else "")
 		+ md
 		+ "\n\n"
 	)

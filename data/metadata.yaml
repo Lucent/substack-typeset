@@ -3,30 +3,36 @@ title: "Surviving Scale"
 subtitle: "Coherence Under Recomposition"
 author: "Lucent"
 date: "2025"
-# thanks: "With thanks to my readers"
+# thanks: "With thanks to my readers"  # renders as footnote on title page
 lang: en-US
+
+# --- Table of contents ---
 toc: true
 toc-title: "Sequence"
-toc-depth: 0
-documentclass: book
+toc-depth: 0              # 0 = chapters only, 1 = +sections, 2 = +subsections
+
+# --- Document class ---
+documentclass: memoir
 classoption:
   - twoside
-  - openany
-# Trade paperback trim size + margins + gutter
-geometry:
-  - paperwidth=6.25in
-  - paperheight=9.25in
-  - layoutwidth=6in
-  - layoutheight=9in
-  - layouthoffset=0.125in
-  - layoutvoffset=0.125in
-  - twoside
-  - inner=0.75in
-  - outer=0.5in
-  - top=0.625in
-  - bottom=0.75in
-  - bindingoffset=0.25in
+  - openany                # chapters can start on any page (not just recto)
+  # - oneside              # no inner/outer margin distinction
+  # - draft                # shows overfull boxes, placeholder images
+# Page layout handled by memoir in header.tex (not geometry package)
 
+# --- Sections ---
+# numbersections: true     # number chapters/sections (default: unnumbered)
+# secnumdepth: 1           # depth of numbering (0=chapter, 1=section, etc.)
+
+# --- Page style ---
+# pagestyle: headings      # headings (chapter/section in header), plain, empty, ruled (memoir)
+
+# --- Paragraph style ---
+# indent: true             # true = indented paragraphs (default for book/memoir)
+                           # false = block paragraphs with inter-paragraph space
+# block-headings: true     # makes \paragraph and \subparagraph block-level
+
+# --- Fonts ---
 mainfont: "spectral-substack.ttf"
 mainfontoptions:
   - Path=fonts/
@@ -34,5 +40,25 @@ mainfontoptions:
   - BoldFont=spectral-substack-bold.ttf
 #  - RawFeature={fallback=mainfallback}
 fontsize: 11pt
-linestretch: 1.15
+# sansfont: "..."          # font for \textsf / headings if configured
+# monofont: "..."          # font for code blocks
+# mathfont: "..."          # font for math mode
+
+# --- Links (PDF metadata & hyperref) ---
+# colorlinks: true         # colored links instead of boxes (for screen PDF)
+# linkcolor: Maroon        # internal links (TOC, cross-refs)
+# urlcolor: Blue           # external URLs
+# toccolor: ""             # TOC link color (if different)
+# links-as-notes: true     # renders \href as text + footnote URL (print-friendly)
+# urlstyle: same           # URL font style: same, tt, rm, sf
+
+# --- PDF metadata ---
+# subject: "Essays on coherence, identity, and scale"
+# keywords:
+#   - essays
+#   - philosophy
+
+# --- Lists ---
+# lof: true                # include List of Figures after TOC
+# lot: true                # include List of Tables after TOC
 ---

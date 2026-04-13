@@ -6,4 +6,5 @@ pandoc -f markdown+smart data/metadata.yaml output/chapters/*.md \
   --top-level-division=chapter \
   --include-in-header=header.tex \
   --lua-filter=links-to-footnotes.lua \
-  --lua-filter=chapter-subtitles.lua
+  --include-before-body=copyright.tex \
+  --include-after-body=colophon.tex

@@ -1,3 +1,11 @@
+-- OVERRIDE: Converts hyperlinks into footnotes for print output. Three behaviors:
+--   1. Internal links (lucent.substack.com): strips the link, keeps plain text
+--   2. Wikipedia links where link text matches the article name: appends a
+--      superscript "W" (blackletter) instead of a footnote
+--   3. All other links: converts to footnote with title + URL
+-- Titles are looked up from data/footnotes.tsv (pre-fetched); falls back to
+-- the link text if no TSV entry exists.
+
 -- Load titles from TSV file
 local titles = {}
 local f = io.open("data/footnotes.tsv", "r")
@@ -17,7 +25,7 @@ function Link(el)
     return el.content
   end
 
-  -- Wikipedia links: superscript 𝔚 if text matches article, otherwise footnote
+  -- Wikipedia links: superscript W if text matches article, otherwise footnote
   if string.match(el.target, "wikipedia%.org") then
     local article = string.match(el.target, "/wiki/([^#?]+)")
     if article then
@@ -44,4 +52,9 @@ function Link(el)
   })
 
   return el.content .. { note }
+end
+
+-- Scene breaks: replace horizontal rules with memoir's \pfbreak (centered * * *)
+function HorizontalRule()
+  return pandoc.RawBlock("latex", "\\pfbreak")
 end

@@ -1,72 +1,93 @@
-\newcommand{\chaptersubtitle}[1]{%
-  \vspace{-1.0em}% <-- space ABOVE subtitle (negative pulls it up closer)
-  {\footnotesize\itshape #1\par}% <-- subtitle style/size
-  \vspace{0.8em}% <-- space BELOW subtitle (before body text)
-}
-
-% Epigraphs for part pages
-\usepackage{epigraph}
-\setlength{\epigraphwidth}{0.8\textwidth}
-
-% Smart quotes
-\usepackage[autostyle=true]{csquotes}
-
-% TOC: dot leaders, unbold chapters, tighter spacing
-\usepackage[titles]{tocloft}
-\renewcommand{\cftchapdotsep}{\cftdotsep}
-\renewcommand{\cftchapfont}{\normalfont}
-\renewcommand{\cftchappagefont}{\normalfont}
-\setlength{\cftbeforechapskip}{0.3em}
-
-\usepackage{titlesec}
-\usepackage{etoolbox}
-\preto\chapter{\setcounter{footnote}{0}}
-
-\titleformat{\chapter}[block]{\bfseries\Large}{}{0pt}{}
-\titlespacing*{\chapter}{0pt}{0pt}{0.5em}
-
-% Parts: start on new page, allow content after title
-\titleclass{\part}{top}
-\titleformat{\part}[block]{\bfseries\Huge\filcenter}{}{0pt}{}
-\titlespacing*{\part}{0pt}{3cm}{1cm}
-
-% Better typography (kerning, spacing, hyphenation)
-% microtype loaded by pandoc, just ensure it's active
-\microtypesetup{final}
-
-% Suppress section titles in running headers (keep default book style)
-\renewcommand{\sectionmark}[1]{}
-
-% Widow/orphan control - only prevent, don't stretch spacing
-\widowpenalty=5000
-\clubpenalty=5000
+% === Page layout (memoir native, replaces geometry package) ===
+% Stock = physical paper; trimmed = final page after cutting
+\setstocksize{9.25in}{6.25in}
+\settrimmedsize{9in}{6in}{*}
+\settrims{0.125in}{0.125in}
+% Margins: inner (spine) + binding offset, outer (edge)
+\setbinding{0.25in}
+\setlrmarginsandblock{0.75in}{0.5in}{*}
+\setulmarginsandblock{0.625in}{0.75in}{*}
+\checkandfixthelayout
 \raggedbottom
 
-% Drop caps
+% === Line spacing (memoir native, replaces setspace package) ===
+\setSingleSpace{1.15}
+\SingleSpacing
+
+% === Half-title page (injected before the full title page via \pretitle) ===
+\pretitle{%
+  \thispagestyle{empty}%
+  \vspace*{\fill}%
+  {\centering\LARGE\itshape Surviving Scale\par}%
+  \vspace*{\fill}%
+  \cleardoublepage
+  \thispagestyle{empty}%
+  \vspace*{\fill}%
+  \begin{center}\HUGE\bfseries}
+\posttitle{\par\end{center}}
+\preauthor{\begin{center}\Large\vspace{0.5em}}
+\postauthor{\par\end{center}\vspace*{\fill}}
+\predate{\begin{center}\large}
+\postdate{\par\end{center}\vspace{1cm}}
+
+% === Chapter style ===
+% 'article' — no "Chapter N" prefix, just the title. Try others from
+% the MemoirChapStyles catalog: komalike, dowding, tandh, madsen, etc.
+\chapterstyle{article}
+% Fix precis shift — memoir defaults to -2\baselineskip unless 'article' class
+% option is set, but we're only using the article *chapter style*, not the option.
+\prechapterprecisshift=0pt
+
+% === Suppress section numbering and section marks in running headers ===
+\setsecnumdepth{chapter}
+\renewcommand{\sectionmark}[1]{}
+
+% === Part style (memoir native, replaces titlesec) ===
+% Suppresses "Part N" prefix, allows content (epigraphs) after title
+\renewcommand{\printpartname}{}
+\renewcommand{\printpartnum}{}
+\renewcommand{\thepart}{}
+\renewcommand{\parttitlefont}{\centering\bfseries\Huge}
+\renewcommand{\beforepartskip}{\vspace*{3cm}}
+\renewcommand{\afterpartskip}{\vspace{1cm}}
+
+% === Epigraphs (memoir built-in, no package needed) ===
+%\setlength{\epigraphwidth}{0.8\textwidth}
+
+% === TOC styling (memoir built-in) ===
+% Prevent TOC from listing itself (memoir adds it by default; Pandoc calls
+% the unstarred \tableofcontents which we can't control, so redirect it)
+\let\oldtableofcontents\tableofcontents
+\renewcommand{\tableofcontents}{\oldtableofcontents*}
+% Parts: bold, spaced, no page numbers (they're section dividers, not destinations)
+\renewcommand{\cftpartfont}{\bfseries\large}
+\renewcommand{\cftpartleader}{}
+\cftpagenumbersoff{part}
+\setlength{\cftbeforepartskip}{1em}
+% Chapters: normal weight, dot leaders, tight spacing
+% Discourage page breaks between chapters so TOC breaks at part boundaries
+\renewcommand{\cftchapterbreak}{\nobreak}
+\renewcommand{\cftchapterfont}{\normalfont}
+\renewcommand{\cftchapterpagefont}{\normalfont}
+\renewcommand{\cftchapterleader}{\cftdotfill{\cftdotsep}}
+\setlength{\cftbeforechapterskip}{0.3em}
+
+% === Per-chapter footnote reset (plain numbers, no chapter prefix) ===
+\counterwithin{footnote}{chapter}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
+% === Scene breaks: ornamental asterisks instead of horizontal rules ===
+% Pandoc renders --- as \rule; memoir's \pfbreak gives centered * * *
+\renewcommand{\pfbreakskip}{1.5em}
+
+% === Ragged-right footnotes (memoir native + ragged2e) ===
+\usepackage{ragged2e}
+\renewcommand{\foottextfont}{\footnotesize\RaggedRight}
+
+% === Drop caps ===
 \usepackage{lettrine}
 
-% Ragged right footnotes
-\usepackage{ragged2e}
-\let\oldfootnote\footnote
-\renewcommand{\footnote}[1]{\oldfootnote{\RaggedRight #1}}
-
-% Fallback for blackletter W
+% === Fallback font for blackletter W (Wikipedia marker) ===
 \usepackage{newunicodechar}
 \newfontfamily\mathfallback{Latin Modern Math}
 \newunicodechar{𝔚}{{\mathfallback 𝔚}}
-
-% Copyright page (appears on back of title page)
-\AtEndPreamble{
-\AtBeginDocument{
-\thispagestyle{empty}
-\null\vfill
-\begin{flushleft}
-\textit{Surviving Scale}\\[0.5em]
-Copyright © 2025 Lucent\\[0.5em]
-All rights reserved.\\[1em]
-No part of this book may be reproduced in any form without written permission from the author.\\[1em]
-First Edition\\[2em]
-\small Originally published on Substack at lucent.substack.com
-\end{flushleft}
-\clearpage
-}}
